@@ -1,16 +1,13 @@
 package com.devsuperior.dslist.services;
 
+import com.devsuperior.dslist.dto.GameMinDTO;
 import com.devsuperior.dslist.dto.GameDTO;
-import com.devsuperior.dslist.dto.GameListDTO;
 import com.devsuperior.dslist.entities.GameEntity;
-import com.devsuperior.dslist.entities.GameListEntity;
 import com.devsuperior.dslist.exceptions.ResourceNotFoundException;
 import com.devsuperior.dslist.repositories.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,16 +19,16 @@ public class GameService {
     @Autowired
     private GameRepository repository;
 
-    @Transactional
-    public List<GameDTO> findGame(){
+    @Transactional(readOnly = true)
+    public List<GameMinDTO> findGame(){
         List<GameEntity> list = repository.findAll();
-        return list.stream().map(x -> new GameDTO(x)).collect(Collectors.toList());
+        return list.stream().map(GameMinDTO::new).collect(Collectors.toList());
     }
 
-    @Transactional
-    public GameListDTO findGameById(Long id){
+    @Transactional(readOnly = true)
+    public GameDTO findGameById(Long id){
         Optional<GameEntity> obj = repository.findById(id);
         GameEntity entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
-        return new GameListDTO(entity);
+        return new GameDTO(entity);
     }
 }
