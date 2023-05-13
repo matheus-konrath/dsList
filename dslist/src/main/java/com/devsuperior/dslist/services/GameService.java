@@ -4,6 +4,7 @@ import com.devsuperior.dslist.dto.GameMinDTO;
 import com.devsuperior.dslist.dto.GameDTO;
 import com.devsuperior.dslist.entities.GameEntity;
 import com.devsuperior.dslist.exceptions.ResourceNotFoundException;
+import com.devsuperior.dslist.projections.GameMinProjection;
 import com.devsuperior.dslist.repositories.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,5 +31,11 @@ public class GameService {
         Optional<GameEntity> obj = repository.findById(id);
         GameEntity entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
         return new GameDTO(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<GameMinDTO> findByList(Long listId){
+        List<GameMinProjection> list = repository.searchByList(listId);
+        return list.stream().map(x -> new GameMinDTO(x)).toList();
     }
 }
